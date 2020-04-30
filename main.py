@@ -27,19 +27,20 @@ class Example:
         return API.get_data()
 
 
-file_name = "answer.json"
+file_full_path = "answer.json"
 
-if os.stat(file_name).st_size == 0:
+Example.static_init()
+
+if os.stat(file_full_path).st_size == 0:
 
     print("carregando dados via api...")
 
-    Example.static_init()
     data = Example.get_data()
 
-    with open(file_name, "a" if os.path.exists(file_name) else "x") as out_file:
+    with open(file_full_path, "a" if os.path.exists(file_full_path) else "x") as out_file:
         json.dump(data, out_file)
 
-with open(file_name) as json_file:
+with open(file_full_path) as json_file:
     d = json.load(json_file)
 
 cifrado = d['cifrado']
@@ -63,10 +64,13 @@ print('Decifrado via JSON {0}'.format(d['decifrado']))
 
 d['decifrado'] = decifrado
 
-# then sending to SHA256() 
 resumo_criptografico = hashlib.sha1(decifrado.encode()) 
 
 d['resumo_criptografico'] = resumo_criptografico.hexdigest()
 
-with open(file_name, "w")  as out_file:
+with open(file_full_path, "w")  as out_file:
     json.dump(d, out_file)
+
+result = API.send_file('answer', 'answer.json', file_full_path)
+
+print(result)
